@@ -192,7 +192,7 @@ def create_team():
 
 @app.route("/delete_school/<school_name>", methods=["DELETE"])
 def delete_school(school_name):
-    school = get_school_name(school_name)
+    school = School.query.filter_by(school_name=school_name).first()
     if not school:
         return jsonify({"message": "School not found"}), 404
 
@@ -202,7 +202,7 @@ def delete_school(school_name):
 
 @app.route("/delete_player/<player_id>", methods=["DELETE"])
 def delete_player(player_id):
-    player = Player.query(player_id=player_id)
+    player = Player.query.filter_by(player_id=player_id).first()
     if not player:
         return jsonify({"message": "Player not found"}), 404
 
@@ -212,7 +212,7 @@ def delete_player(player_id):
 
 @app.route("/delete_conference/<conference_name>", methods=["DELETE"])
 def delete_conference(conference_name):
-    conference = Conference.query(conference_name=conference_name)
+    conference = Conference.query.filter_by(conference_name=conference_name).first()
     if not conference:
         return jsonify({"message": "Conference not found"}), 404
 
@@ -222,7 +222,7 @@ def delete_conference(conference_name):
 
 @app.route("/delete_team_in_conference/<school_name>/<school_year>", methods=["DELETE"])
 def delete_team_in_conference(school_name, school_year):
-    team_in_conference = CompetesInConference.query(school_name=school_name, school_year=school_year)
+    team_in_conference = CompetesInConference.query.filter_by(school_name=school_name, school_year=school_year).first()
     if not team_in_conference:
         return jsonify({"message": "Team in conference not found"}), 404
 
@@ -232,7 +232,7 @@ def delete_team_in_conference(school_name, school_year):
 
 @app.route("/delete_scouting_report/<player_id>/<report_date>", methods=["DELETE"])
 def delete_scouting_report(player_id, report_date):
-    scouting_report = ScoutingReport.query(player_id=player_id, report_date=report_date)
+    scouting_report = ScoutingReport.query.filter_by(player_id=player_id, report_date=report_date).first()
     if not scouting_report:
         return jsonify({"message": "Scouting report not found"}), 404
 
