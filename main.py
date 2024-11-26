@@ -9,6 +9,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+
 class School(db.Model):
     school_name = db.Column(db.String(100), primary_key=True, nullable=False)
     school_state = db.Column(db.String(50), nullable=False)
@@ -57,8 +58,10 @@ def clear_db():
 def populate_db():
     clear_db()
     schools = [
-        {"school_name": "University of Virginia", "school_state": "Virginia", "city": "Charlottesville", "mascot": "Cavalier"},
-        {"school_name": "Harvard University", "school_state": "Massachusetts", "city": "Cambridge", "mascot": "Crimson"},
+        {"school_name": "University of Virginia", "school_state": "Virginia", "city": "Charlottesville",
+         "mascot": "Cavalier"},
+        {"school_name": "Harvard University", "school_state": "Massachusetts", "city": "Cambridge",
+         "mascot": "Crimson"},
         {"school_name": "Stanford University", "school_state": "California", "city": "Stanford", "mascot": "Cardinal"}
     ]
     for school in schools:
@@ -72,9 +75,12 @@ def populate_db():
     db.session.commit()
 
     players = [
-        {"number": 10, "last_name": "Doe", "first_name": "John", "position": "Forward", "height": 75, "player_weight": 180, "player_year": 2023, "school_name": "University of Virginia"},
-        {"number": 12, "last_name": "Smith", "first_name": "Jane", "position": "Guard", "height": 68, "player_weight": 150, "player_year": 2023, "school_name": "Harvard University"},
-        {"number": 14, "last_name": "Brown", "first_name": "Charlie", "position": "Center", "height": 85, "player_weight": 220, "player_year": 2023, "school_name": "Stanford University"}
+        {"number": 10, "last_name": "Doe", "first_name": "John", "position": "Forward", "height": 75,
+         "player_weight": 180, "player_year": 2023, "school_name": "University of Virginia"},
+        {"number": 12, "last_name": "Smith", "first_name": "Jane", "position": "Guard", "height": 68,
+         "player_weight": 150, "player_year": 2023, "school_name": "University of Virginia"},
+        {"number": 14, "last_name": "Brown", "first_name": "Charlie", "position": "Center", "height": 85,
+         "player_weight": 220, "player_year": 2023, "school_name": "Stanford University"}
     ]
     for player in players:
         new_player = Player(
@@ -103,7 +109,7 @@ def populate_db():
 
     scouting_reports = [
         {"player_id": 1, "report_date": date(2023, 11, 1), "scouting_description": "Strong offensive skills."},
-        {"player_id": 2, "report_date": date(2023, 11, 2), "scouting_description": "Excellent defensive tactics."},
+        {"player_id": 1, "report_date": date(2023, 11, 2), "scouting_description": "Excellent defensive tactics."},
         {"player_id": 3, "report_date": date(2023, 11, 3), "scouting_description": "Great at team coordination."}
     ]
     for report in scouting_reports:
@@ -117,7 +123,7 @@ def populate_db():
     competes_in_conferences = [
         {"school_name": "University of Virginia", "school_year": 2023, "conference_name": "ACC"},
         {"school_name": "Harvard University", "school_year": 2023, "conference_name": "Ivy League"},
-        {"school_name": "Stanford University", "school_year": 2023, "conference_name": "Pac-12"}
+        {"school_name": "Stanford University", "school_year": 2023, "conference_name": "ACC"}
     ]
     for entry in competes_in_conferences:
         new_entry = CompetesInConference(
@@ -148,6 +154,8 @@ def get_school_name(school_name):
     else:
         return jsonify({"error": "School not found"}), 404
 
+
+# get all the players in a certain school
 @app.route("/get_players_team/<school_name>", methods=["GET"])
 def get_players_team(school_name):
     team = School.query.filter_by(school_name=school_name).first()
@@ -172,6 +180,85 @@ def get_players_team(school_name):
             ]
         }
         return jsonify(team_data), 200
+    else:
+        return jsonify({"error": "School not found"}), 404
+
+
+# get player information for a certain id
+@app.route("/get_player/<player_id>", methods=["GET"])
+def get_player_id(player_id):
+    player = Player.query.filter_by(player_id=player_id).first()
+    if player:
+        player_data = {
+            "player_id": player.player_id,
+            "number": player.number,
+            "last_name": player.last_name,
+            "first_name": player.first_name,
+            "position": player.position,
+            "height": player.height,
+            "player_weight": player.player_weight,
+            "player_year": player.player_year,
+            "school_name": player.school_name
+        }
+        return jsonify(player_data), 200
+    else:
+        return jsonify({"error": "School not found"}), 404
+
+
+@app.route("/get_conference_name/<conference_name>", methods=["GET"])
+def get_conference_name(conference_name):
+    conference = Conference.query.filter_by(conference_name=conference_name).first()
+    if conference:
+        conference_data = {
+            "conference_name": conference.conference_name,
+            "division": conference.division,
+        }
+        return jsonify(conference_data), 200
+    else:
+        return jsonify({"error": "School not found"}), 404
+
+
+@app.route("/get_teams_conference/<conference_name>", methods=["GET"])
+def get_teams_conference(conference_name):
+    conference = Conference.query.filter_by(conference_name=conference_name).first()
+    if conference:
+        teams = CompetesInConference.query.filter_by(conference_name=conference_name).all()
+        conference_data = {
+            "conference_name": conference.conference_name,
+            "division": conference.division,
+            "teams": [
+                {
+                    "school_name": team.school_name,
+                    "year": team.school_year
+                } for team in teams
+            ]
+        }
+        return jsonify(conference_data), 200
+    else:
+        return jsonify({"error": "School not found"}), 404
+
+@app.route("/get_scouting_report_id/<player_id>", methods=["GET"])
+def get_scouting_report_id(player_id):
+    player = Player.query.filter_by(player_id=player_id).first()
+    if player:
+        reports = ScoutingReport.query.filter_by(player_id=player_id).all()
+        report_data = {
+            "player_id": player.player_id,
+            "number": player.number,
+            "last_name": player.last_name,
+            "first_name": player.first_name,
+            "position": player.position,
+            "height": player.height,
+            "player_weight": player.player_weight,
+            "player_year": player.player_year,
+            "report": [
+                {
+                    "report_date": report.report_date,
+                    "scouting_description": report.scouting_description
+                } for report in reports
+            ]
+        }
+        return jsonify(report_data), 200
     else:
         return jsonify({"error": "School not found"}), 404
 
