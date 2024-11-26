@@ -141,7 +141,7 @@ with app.app_context():
     populate_db()
 
 
-@app.route("/get_school_name/<school_name>", methods=["GET"])
+@app.route("/get_school/<school_name>", methods=["GET"])
 def get_school_name(school_name):
     team = School.query.filter_by(school_name=school_name).first()
     if team:
@@ -346,6 +346,144 @@ def create_scouting_report():
     return jsonify({"message": "Scouting Report added successfully"}), 201
 
 
+@app.route("/update_school/<school_name>", methods=["PUT"])
+def update_school(school_name):
+    school = School.query.filter_by(school_name=school_name).first()
+    if not school:
+        return jsonify({"message": "School not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No input data provided"}), 400
+
+    new_school_name = data.get('school_name')
+    new_school_state = data.get('school_state')
+    new_city = data.get('city')
+    new_mascot = data.get('mascot')
+
+    if new_school_name:
+        school.school_name = new_school_name
+    if new_school_state:
+        school.school_state = new_school_state
+    if new_city:
+        school.city = new_city
+    if new_mascot:
+        school.mascot = new_mascot
+
+    db.session.commit()
+    return jsonify({"message": "School updated successfully"}), 200
+
+@app.route("/update_player/<player_id>", methods=["PUT"])
+def update_player(player_id):
+    player = Player.query.filter_by(player_id=player_id).first()
+    if not player:
+        return jsonify({"message": "Player not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No input data provided"}), 400
+
+    new_player_id = data.get('player_id')
+    new_number = data.get('number')
+    new_last_name = data.get('last_name')
+    new_first_name = data.get('first_name')
+    new_position = data.get('position')
+    new_height = data.get('height')
+    new_player_weight = data.get('player_weight')
+    new_player_year = data.get('player_year')
+    new_school_name = data.get('school_name')
+
+    if new_player_id:
+        player.player_id = new_player_id
+    if new_number:
+        player.number = new_number
+    if new_last_name:
+        player.last_name = new_last_name
+    if new_first_name:
+        player.first_name = new_first_name
+    if new_position:
+        player.position = new_position
+    if new_height:
+        player.height = new_height
+    if new_player_weight:
+        player.player_weight = new_player_weight
+    if new_player_year:
+        player.new_player_year = new_player_year
+    if new_school_name:
+        player.school_name = new_school_name
+
+    db.session.commit()
+    return jsonify({"message": "Player updated successfully"}), 200
+
+@app.route("/update_conference/<conference_name>", methods=["PUT"])
+def update_conference(conference_name):
+    conference = Conference.query.filter_by(conference_name=conference_name).first()
+    if not conference:
+        return jsonify({"message": "Conference not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No input data provided"}), 400
+
+    new_conference_name = data.get('conference_name')
+    new_division = data.get('division')
+
+    if new_conference_name:
+        conference.conference_name = new_conference_name
+    if new_division:
+        conference.division = new_division
+    
+    db.session.commit()
+    return jsonify({"message": "Conference updated successfully"}), 200
+
+@app.route("/update_competes_in_conference/<school_name>/<school_year>", methods=["PUT"])
+def update_competes_in_conference(school_name, school_year):
+    team_in_conference = CompetesInConference.query.filter_by(school_name=school_name, school_year=school_year).first()
+    if not team_in_conference:
+        return jsonify({"message": "Team in conference not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No input data provided"}), 400
+
+    new_school_name = data.get('school_name')
+    new_school_year = data.get('school_year')
+    new_conference_name = data.get('conference_name')
+
+    if new_school_name:
+        team_in_conference.school_name = new_school_name
+    if new_school_year:
+        team_in_conference.school_year = new_school_year
+    if new_conference_name:
+        team_in_conference.conference_name = new_conference_name
+    
+    db.session.commit()
+    return jsonify({"message": "Team in conference updated successfully"}), 200
+
+@app.route("/update_scouting_report/<player_id>/<report_date>", methods=["PUT"])
+def update_scouting_report(player_id, report_date):
+    scouting_report = ScoutingReport.query.filter_by(player_id=player_id, report_date=report_date).first()
+    if not scouting_report:
+        return jsonify({"message": "Scouting report not found"}), 404
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"message": "No input data provided"}), 400
+
+    new_player_id = data.get('player_id')
+    new_report_date = data.get('report_date')
+    new_scouting_description = data.get('scouting_description')
+
+    if new_player_id:
+        scouting_report.player_id = new_player_id
+    if new_report_date:
+        scouting_report.report_date = new_report_date
+    if new_scouting_description:
+        scouting_report.scouting_description = new_scouting_description
+    
+    db.session.commit()
+    return jsonify({"message": "Scouting report updated successfully"}), 200
+
 @app.route("/delete_school/<school_name>", methods=["DELETE"])
 def delete_school(school_name):
     school = School.query.filter_by(school_name=school_name).first()
@@ -379,8 +517,8 @@ def delete_conference(conference_name):
     return jsonify({"message": "Conference deleted successfully"}), 200
 
 
-@app.route("/delete_team_in_conference/<school_name>/<school_year>", methods=["DELETE"])
-def delete_team_in_conference(school_name, school_year):
+@app.route("/delete_competes_in_conference/<school_name>/<school_year>", methods=["DELETE"])
+def delete_competes_in_conference(school_name, school_year):
     team_in_conference = CompetesInConference.query.filter_by(school_name=school_name, school_year=school_year).first()
     if not team_in_conference:
         return jsonify({"message": "Team in conference not found"}), 404
