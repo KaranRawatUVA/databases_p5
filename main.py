@@ -73,7 +73,7 @@ def populate_db():
 
     players = [
         {"number": 10, "last_name": "Doe", "first_name": "John", "position": "Forward", "height": 75, "player_weight": 180, "player_year": 2023, "school_name": "University of Virginia"},
-        {"number": 12, "last_name": "Smith", "first_name": "Jane", "position": "Guard", "height": 68, "player_weight": 150, "player_year": 2023, "school_name": "Harvard University"},
+        {"number": 12, "last_name": "Smith", "first_name": "Jane", "position": "Guard", "height": 68, "player_weight": 150, "player_year": 2023, "school_name": "University of Virginia"},
         {"number": 14, "last_name": "Brown", "first_name": "Charlie", "position": "Center", "height": 85, "player_weight": 220, "player_year": 2023, "school_name": "Stanford University"}
     ]
     for player in players:
