@@ -277,5 +277,55 @@ def create_team():
     return jsonify({"message": "School created successfully"}), 201
 
 
+@app.route("/delete_school/<school_name>", methods=["DELETE"])
+def delete_school(school_name):
+    school = get_school_name(school_name)
+    if not school:
+        return jsonify({"message": "School not found"}), 404
+
+    db.session.delete(school)
+    db.session.commit()
+    return jsonify({"message": "School deleted successfully"}), 200
+
+@app.route("/delete_player/<player_id>", methods=["DELETE"])
+def delete_player(player_id):
+    player = Player.query(player_id=player_id)
+    if not player:
+        return jsonify({"message": "Player not found"}), 404
+
+    db.session.delete(player)
+    db.session.commit()
+    return jsonify({"message": "Player deleted successfully"}), 200
+
+@app.route("/delete_conference/<conference_name>", methods=["DELETE"])
+def delete_conference(conference_name):
+    conference = Conference.query(conference_name=conference_name)
+    if not conference:
+        return jsonify({"message": "Conference not found"}), 404
+
+    db.session.delete(conference)
+    db.session.commit()
+    return jsonify({"message": "Conference deleted successfully"}), 200
+
+@app.route("/delete_team_in_conference/<school_name>/<school_year>", methods=["DELETE"])
+def delete_team_in_conference(school_name, school_year):
+    team_in_conference = CompetesInConference.query(school_name=school_name, school_year=school_year)
+    if not team_in_conference:
+        return jsonify({"message": "Team in conference not found"}), 404
+
+    db.session.delete(team_in_conference)
+    db.session.commit()
+    return jsonify({"message": "Team in conference deleted successfully"}), 200
+
+@app.route("/delete_scouting_report/<player_id>/<report_date>", methods=["DELETE"])
+def delete_scouting_report(player_id, report_date):
+    scouting_report = ScoutingReport.query(player_id=player_id, report_date=report_date)
+    if not scouting_report:
+        return jsonify({"message": "Scouting report not found"}), 404
+
+    db.session.delete(scouting_report)
+    db.session.commit()
+    return jsonify({"message": "Scouting report deleted successfully"}), 200
+
 if __name__ == "__main__":
     app.run(debug=True)
