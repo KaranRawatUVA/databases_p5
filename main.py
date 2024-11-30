@@ -374,7 +374,12 @@ def add_player():
     )
     db.session.add(new_player)
     db.session.commit()
-    return jsonify({"message": "Player added successfully"}), 201
+    return (
+        jsonify(
+            {"message": "Player added successfully!", "player_id": new_player.player_id}
+        ),
+        201,
+    )
 
 
 @app.route("/create_conference", methods=["POST"])
