@@ -558,6 +558,14 @@ def update_competes_in_conference(school_name, school_year):
 
 @app.route("/update_scouting_report/<player_id>/<report_date>", methods=["PUT"])
 def update_scouting_report(player_id, report_date):
+    try:
+        report_date = datetime.strptime(report_date, "%Y-%m-%d").date()
+    except ValueError:
+        return (
+            jsonify({"message": "Invalid report_date format. Expected YYYY-MM-DD"}),
+            400,
+        )
+
     scouting_report = ScoutingReport.query.filter_by(
         player_id=player_id, report_date=report_date
     ).first()
@@ -572,10 +580,20 @@ def update_scouting_report(player_id, report_date):
     new_report_date = data.get("report_date")
     new_scouting_description = data.get("scouting_description")
 
+    if new_report_date:
+        try:
+            new_report_date = datetime.strptime(new_report_date, "%Y-%m-%d").date()
+            scouting_report.report_date = new_report_date
+        except ValueError:
+            return (
+                jsonify(
+                    {"message": "Invalid new report_date format. Expected YYYY-MM-DD"}
+                ),
+                400,
+            )
+
     if new_player_id:
         scouting_report.player_id = new_player_id
-    if new_report_date:
-        scouting_report.report_date = new_report_date
     if new_scouting_description:
         scouting_report.scouting_description = new_scouting_description
 

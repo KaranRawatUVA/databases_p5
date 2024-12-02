@@ -133,10 +133,11 @@ async function getScoutingReport() {
 }
 
 async function updateScoutingReport() {
-    const playerId = document.getElementById('update_scouting_report_player_id').value;
-    const reportDate = document.getElementById('update_scouting_report_date').value;
+    const playerId = document.getElementById('update_report_player_id').value;
+    const reportDate = document.getElementById('update_report_date').value; // Current date
     const data = {
-        scouting_description: document.getElementById('update_scouting_report_description').value,
+        report_date: document.getElementById('update_new_report_date').value, // New date
+        scouting_description: document.getElementById('update_report_description').value, // New description
     };
     fetchData(`/update_scouting_report/${playerId}/${reportDate}`, 'PUT', data);
 }
@@ -160,8 +161,16 @@ async function deleteTeamInConference() {
 async function updateTeamInConference() {
     const schoolName = document.getElementById('update_team_in_conference_school').value;
     const schoolYear = document.getElementById('update_team_in_conference_year').value;
-    const data = {
-        conference_name: document.getElementById('update_team_in_conference_new_conference').value,
-    };
-    fetchData(`/update_competes_in_conference/${schoolName}/${schoolYear}`, 'PUT', data);
+    const newSchoolYear = document.getElementById('update_new_team_in_conference_year').value; // Optional new year
+    const newConferenceName = document.getElementById('update_team_in_conference_new_conference').value;
+
+    const data = {};
+    if (newSchoolYear) {
+        data.school_year = newSchoolYear;
+    }
+    if (newConferenceName) {
+        data.conference_name = newConferenceName;
+    }
+
+    await fetchData(`/update_competes_in_conference/${schoolName}/${schoolYear}`, 'PUT', data);
 }
